@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-delegation-token-v0.1.json",
+  "title": "AgentDelegationToken",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable agent delegation tokens under Spec 03 and Floor Right F1.",
+  "type": "object",
+  "required": [
+    "schema_version", "token_id", "issued_at", "expires_at", "principal_chain",
+    "delegator", "delegatee", "scope", "revocation", "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "token_id": { "type": "string", "pattern": "^del-[a-zA-Z0-9_-]+$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "principal_chain": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+    "delegator": {
+      "type": "object",
+      "required": ["agent_id", "role", "max_delegation_depth"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "role": { "type": "string", "enum": ["twin", "coordinator", "agent"] },
+        "max_delegation_depth": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "delegatee": {
+      "type": "object",
+      "required": ["agent_id", "role"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "role": { "type": "string", "enum": ["subagent", "tool_runner", "specialist"] }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["allowed_actions", "data_categories", "max_budget_units", "attenuation_enforced"],
+      "properties": {
+        "allowed_actions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "data_categories": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "max_budget_units": { "type": "integer", "minimum": 1 },
+        "attenuation_enforced": { "type": "boolean", "const": true }
+      },
+      "additionalProperties": false
+    },
+    "revocation": {
+      "type": "object",
+      "required": ["revocable", "is_revoked"],
+      "properties": {
+        "revocable": { "type": "boolean", "const": true },
+        "is_revoked": { "type": "boolean" },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+        "revocation_reason": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["party", "key_id", "algorithm", "signature_hex"],
+        "properties": {
+          "party": { "type": "string", "enum": ["delegator", "delegatee"] },
+          "key_id": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["ed25519", "ecdsa-p256"] },
+          "signature_hex": { "type": "string", "pattern": "^[0-9a-fA-F]{128}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

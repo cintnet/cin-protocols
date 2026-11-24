@@ -1,0 +1,82 @@
+{
+  "schema_version": "0.1.0",
+  "contract_id": "contract-research-paper-analysis-20261011",
+  "issued_at": "2026-10-11T12:00:00Z",
+  "expires_at": "2026-10-11T16:00:00Z",
+  "principal": {
+    "principal_type": "person",
+    "principal_id": "person:steward-cin-001",
+    "authorization_root": "direct_human_consent"
+  },
+  "target_agent": {
+    "agent_id": "agent-lit-reviewer-01",
+    "role": "Academic Literature Reviewer",
+    "model_tier": "local_isolated",
+    "execution_mode": "bounded_task"
+  },
+  "execution_bounds": {
+    "permitted_tools": [
+      "read_url_content",
+      "parse_bibtex",
+      "extract_claims"
+    ],
+    "forbidden_capabilities": [
+      "shell_execution",
+      "credential_access",
+      "file_modification",
+      "network_listen"
+    ],
+    "filesystem_policy": {
+      "allowed_read_roots": [
+        "/workspace/cin/research/policy/"
+      ],
+      "allowed_write_roots": [
+        "/workspace/cin/research/staging/"
+      ],
+      "forbidden_patterns": [
+        "../",
+        "..\\",
+        "/etc/",
+        "C:\\Windows",
+        "~/.ssh",
+        "~/.gnupg"
+      ]
+    }
+  },
+  "egress_controls": {
+    "mode": "allowlist_only",
+    "allowed_endpoints": [
+      "https://export.arxiv.org/api/query",
+      "https://api.crossref.org/works/"
+    ],
+    "prohibit_direct_ip": true,
+    "prohibit_dns_rebinding": true
+  },
+  "resource_quotas": {
+    "max_wall_time_seconds": 14400,
+    "max_tool_invocations": 500,
+    "max_inbound_bytes": 52428800,
+    "max_outbound_bytes": 1048576
+  },
+  "termination_conditions": {
+    "auto_halt_on_boundary_violation": true,
+    "max_consecutive_tool_failures": 3,
+    "cross_run_persistence_permitted": false
+  },
+  "audit_provenance": {
+    "audit_channel": "local_hash_chain",
+    "contract_digest_sha256": "4a132bc2f36b6f3b0e9c85fb1234567890abcdef1234567890abcdef12345678"
+  },
+  "signatures": [
+    {
+      "signer_role": "human_principal",
+      "key_id": "ed25519:steward-pubkey-001",
+      "signature": "ed25519:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890="
+    },
+    {
+      "signer_role": "runtime_host",
+      "key_id": "ed25519:runtime-host-001",
+      "signature": "ed25519:123456abcdef123456abcdef123456abcdef123456abcdef123456abcdef1234="
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-audit-record-v0.1.json",
+  "title": "AgentAuditRecord",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable agent runtime audit and decision records under Spec 03 and arXiv:2606.12320.",
+  "type": "object",
+  "required": [
+    "schema_version", "record_id", "timestamp", "prev_record_hash",
+    "agent_id", "contract_id", "action_plane", "adjudication",
+    "evidence", "human_summary", "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "record_id": { "type": "string", "pattern": "^audit-[a-zA-Z0-9_-]+$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "prev_record_hash": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+    "agent_id": { "type": "string" },
+    "contract_id": { "type": "string" },
+    "action_plane": {
+      "type": "string",
+      "enum": ["reasoning", "network", "identity", "endpoint", "data"]
+    },
+    "adjudication": {
+      "type": "object",
+      "required": ["decision", "gatekeeper_involved", "rationale"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "deny", "hold_gate", "attenuate", "redact", "suspend"]
+        },
+        "gatekeeper_involved": { "type": "boolean" },
+        "rationale": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["input_digest", "output_digest", "tokens_used", "sensitivity"],
+      "properties": {
+        "input_digest": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+        "output_digest": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "tokens_used": { "type": "integer", "minimum": 0 },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["public", "internal", "twin_tier1"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "human_summary": { "type": "string" },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signer_role", "key_id", "algorithm", "signature_hex"],
+        "properties": {
+          "signer_role": { "type": "string", "enum": ["runtime_host", "gatekeeper", "verifier"] },
+          "key_id": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["ed25519", "ecdsa-p256"] },
+          "signature_hex": { "type": "string", "pattern": "^[0-9a-fA-F]{128}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

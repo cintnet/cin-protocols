@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-mortal-contract-v0.1.json",
+  "title": "AgentMortalContract",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable mortal computation contracts under Spec 03 and Research Agenda 13.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "contract_id",
+    "agent_id",
+    "version",
+    "purpose",
+    "principals",
+    "capability_tier",
+    "budgets",
+    "metering_method",
+    "capabilities",
+    "remote_models",
+    "issued_at",
+    "expires_at",
+    "renewal_count",
+    "approvers",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "contract_id": { "type": "string", "pattern": "^contract-[a-zA-Z0-9_-]+$" },
+    "agent_id": { "type": "string", "pattern": "^agent-[a-zA-Z0-9_-]+$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "purpose": {
+      "type": "object",
+      "required": ["code", "plain_language_statement"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "plain_language_statement": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "principals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["principal_id", "principal_type"],
+        "properties": {
+          "principal_id": { "type": "string", "minLength": 1 },
+          "principal_type": { "type": "string", "enum": ["person", "community", "cooperative"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "capability_tier": {
+      "type": "string",
+      "enum": ["tier_1_bounded", "tier_2_isolated", "tier_3_evaluated"]
+    },
+    "budgets": {
+      "type": "object",
+      "required": [
+        "inference_units_per_day",
+        "training_units",
+        "memory_mb",
+        "storage_mb",
+        "max_replicas"
+      ],
+      "properties": {
+        "inference_units_per_day": { "type": "integer", "minimum": 0 },
+        "training_units": { "type": "integer", "minimum": 0 },
+        "memory_mb": { "type": "integer", "minimum": 1 },
+        "storage_mb": { "type": "integer", "minimum": 1 },
+        "max_replicas": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "metering_method": {
+      "type": "object",
+      "required": [
+        "local_inference",
+        "remote_inference",
+        "budget_conservation_enforced"
+      ],
+      "properties": {
+        "local_inference": {
+          "type": "string",
+          "enum": ["estimated_ops_per_token", "cycle_counter", "deterministic_mock"]
+        },
+        "remote_inference": {
+          "type": "string",
+          "enum": ["provider_billed_tokens", "disallowed"]
+        },
+        "budget_conservation_enforced": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "permission", "data_scope"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "permission": { "type": "string", "enum": ["allow", "gate", "deny"] },
+          "data_scope": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "remote_models": {
+      "type": "object",
+      "required": ["permitted", "allowed_providers", "max_data_sensitivity"],
+      "properties": {
+        "permitted": { "type": "boolean" },
+        "allowed_providers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "max_data_sensitivity": {
+          "type": "string",
+          "enum": ["public", "pseudonymous", "disallowed_for_remote"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "renewal_count": { "type": "integer", "minimum": 0 },
+    "approvers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["approver_id", "role"],
+        "properties": {
+          "approver_id": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "enum": ["person_principal", "steward", "designated_guardian"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signer_id", "signature_type", "signature_hex"],
+        "properties": {
+          "signer_id": { "type": "string", "minLength": 1 },
+          "signature_type": { "type": "string", "enum": ["ed25519", "mock_local_key"] },
+          "signature_hex": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$|^[0-9a-fA-F]{128}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,244 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-web-contract-v0.1.json",
+  "title": "AgentWebContract",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable agent web interaction contracts bounding domain egress, HTTP methods, payload limits, object compilation, and session credential isolation under Specification 03 and Floor Rights F1, F3, and F19. Offline schema validation checks structural shape and parameter bounds; it does not replace runtime egress enforcement or verified network authorization, nor does HTTP method restriction guarantee side-effect-free execution.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "contract_id",
+    "issued_at",
+    "expires_at",
+    "principal",
+    "target_agent",
+    "domain_scope",
+    "interaction_bounds",
+    "data_protection",
+    "evidence_requirements",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^webcontract-[a-zA-Z0-9_-]+$"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "principal": {
+      "type": "object",
+      "required": ["principal_type", "principal_id", "authorization_root"],
+      "properties": {
+        "principal_type": {
+          "type": "string",
+          "enum": ["person", "cooperative"]
+        },
+        "principal_id": {
+          "type": "string",
+          "pattern": "^(person|cooperative):[a-zA-Z0-9_-]+$"
+        },
+        "authorization_root": {
+          "type": "string",
+          "enum": ["direct_human_consent", "delegated_twin_policy"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "target_agent": {
+      "type": "object",
+      "required": ["agent_id", "role", "interaction_mode"],
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "pattern": "^agent-[a-zA-Z0-9_-]+$"
+        },
+        "role": {
+          "type": "string",
+          "minLength": 3
+        },
+        "interaction_mode": {
+          "type": "string",
+          "enum": ["retrieval_only", "form_interaction", "deep_research"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "domain_scope": {
+      "type": "object",
+      "required": [
+        "allowed_endpoints",
+        "forbidden_domains",
+        "allowed_methods",
+        "prohibit_wildcard_domains",
+        "prohibit_direct_ip"
+      ],
+      "properties": {
+        "allowed_endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^https://(?!(?:\\d{1,3}\\.){3}\\d{1,3}(?::|/|$))([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}(:([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(/[^\\s\\x00-\\x1f\\x7f]*)?$"
+          },
+          "minItems": 1
+        },
+        "forbidden_domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allowed_methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["GET", "HEAD", "POST"]
+          },
+          "minItems": 1
+        },
+        "prohibit_wildcard_domains": {
+          "type": "boolean",
+          "const": true
+        },
+        "prohibit_direct_ip": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "interaction_bounds": {
+      "type": "object",
+      "required": [
+        "max_requests_per_session",
+        "max_payload_bytes",
+        "request_timeout_seconds",
+        "max_consecutive_http_errors"
+      ],
+      "properties": {
+        "max_requests_per_session": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_payload_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "request_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "max_consecutive_http_errors": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_protection": {
+      "type": "object",
+      "required": [
+        "cookie_policy",
+        "credential_retention_permitted",
+        "strip_personal_identifiers",
+        "ban_cross_site_tracking"
+      ],
+      "properties": {
+        "cookie_policy": {
+          "type": "string",
+          "enum": ["disallowed", "ephemeral_session_only"]
+        },
+        "credential_retention_permitted": {
+          "type": "boolean",
+          "const": false
+        },
+        "strip_personal_identifiers": {
+          "type": "boolean",
+          "const": true
+        },
+        "ban_cross_site_tracking": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence_requirements": {
+      "type": "object",
+      "required": [
+        "capture_response_digests",
+        "addressable_object_schema",
+        "audit_channel"
+      ],
+      "properties": {
+        "capture_response_digests": {
+          "type": "boolean",
+          "const": true
+        },
+        "addressable_object_schema": {
+          "type": "object",
+          "required": [
+            "require_address",
+            "require_value",
+            "require_association"
+          ],
+          "properties": {
+            "require_address": {
+              "type": "boolean",
+              "const": true
+            },
+            "require_value": {
+              "type": "boolean",
+              "const": true
+            },
+            "require_association": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "audit_channel": {
+          "type": "string",
+          "enum": ["local_hash_chain", "signed_evidence_ledger"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signer_role", "key_id", "signature"],
+        "properties": {
+          "signer_role": {
+            "type": "string",
+            "enum": ["runtime_host", "gatekeeper", "human_principal"]
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "signature": {
+            "type": "string",
+            "pattern": "^ed25519:[a-zA-Z0-9+/=]+$"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-policy-card-v0.1.json",
+  "title": "AgentPolicyCard",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-readable runtime policy cards defining execution bounds, tool permissions, and human intervention triggers.",
+  "type": "object",
+  "required": [
+    "schema_version", "card_id", "issued_at", "expires_at", "principal",
+    "runtime_bounds", "human_intervention", "revocation", "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "card_id": { "type": "string", "pattern": "^card-[a-zA-Z0-9_-]+$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "principal": {
+      "type": "object",
+      "required": ["agent_id", "principal_type", "owner_id"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "principal_type": { "type": "string", "enum": ["person", "cooperative"] },
+        "owner_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "runtime_bounds": {
+      "type": "object",
+      "required": ["network_egress", "compute_quota", "tools", "data_boundaries"],
+      "properties": {
+        "network_egress": {
+          "type": "object",
+          "required": ["mode", "allowed_hosts"],
+          "properties": {
+            "mode": { "type": "string", "enum": ["isolated", "allowlist_only"] },
+            "allowed_hosts": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": { "properties": { "mode": { "const": "allowlist_only" } } },
+              "then": { "properties": { "allowed_hosts": { "minItems": 1 } } }
+            }
+          ]
+        },
+        "compute_quota": {
+          "type": "object",
+          "required": ["max_steps", "max_tokens", "timeout_seconds"],
+          "properties": {
+            "max_steps": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "max_tokens": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+            "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 }
+          },
+          "additionalProperties": false
+        },
+        "tools": {
+          "type": "object",
+          "required": ["permitted_tools", "forbidden_capabilities"],
+          "properties": {
+            "permitted_tools": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "forbidden_capabilities": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          },
+          "additionalProperties": false
+        },
+        "data_boundaries": {
+          "type": "object",
+          "required": ["file_access_mode", "forbidden_paths"],
+          "properties": {
+            "file_access_mode": { "type": "string", "enum": ["read_only", "isolated_workspace", "none"] },
+            "forbidden_paths": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "human_intervention": {
+      "type": "object",
+      "required": ["require_approval_actions", "financial_transaction_limit_cents"],
+      "properties": {
+        "require_approval_actions": { "type": "array", "items": { "type": "string" } },
+        "financial_transaction_limit_cents": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "revocation": {
+      "type": "object",
+      "required": ["revocable", "is_revoked"],
+      "properties": {
+        "revocable": { "type": "boolean", "const": true },
+        "is_revoked": { "type": "boolean" },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["party", "key_id", "algorithm", "signature_hex"],
+        "properties": {
+          "party": { "type": "string", "enum": ["principal", "agent"] },
+          "key_id": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["ed25519", "ecdsa-p256"] },
+          "signature_hex": { "type": "string", "pattern": "^[0-9a-fA-F]{128}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

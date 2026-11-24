@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-consent-grant-v0.1.json",
+  "title": "AgentConsentGrant",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable consent grants between agents under Spec 03 and Floor Right F1.",
+  "type": "object",
+  "required": [
+    "schema_version", "grant_id", "issued_at", "expires_at", "human_authorization",
+    "grantor", "grantee", "purpose", "data_scope", "retention_policy", "revocation", "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "grant_id": { "type": "string", "pattern": "^grant-[a-zA-Z0-9_-]+$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "human_authorization": {
+      "type": "object",
+      "required": ["mode", "authorized_by"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["explicit_prompt", "delegated_twin_policy"] },
+        "authorized_by": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "grantor": {
+      "type": "object",
+      "required": ["agent_id", "principal_type"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "principal_type": { "type": "string", "enum": ["person", "cooperative"] }
+      },
+      "additionalProperties": false
+    },
+    "grantee": {
+      "type": "object",
+      "required": ["agent_id", "organization_name", "service_endpoint"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "organization_name": { "type": "string" },
+        "service_endpoint": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "purpose": {
+      "type": "object",
+      "required": ["code", "plain_text_description"],
+      "properties": {
+        "code": { "type": "string" },
+        "plain_text_description": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "data_scope": {
+      "type": "object",
+      "required": ["category", "granularity", "fields_permitted", "max_invocations"],
+      "properties": {
+        "category": { "type": "string" },
+        "granularity": { "type": "string", "enum": ["single_reading", "aggregate_proof", "session_stream", "historical_summary"] },
+        "fields_permitted": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "max_invocations": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "retention_policy": {
+      "type": "object",
+      "required": ["ephemeral_only", "storage_allowed_days"],
+      "properties": {
+        "ephemeral_only": { "type": "boolean" },
+        "storage_allowed_days": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "revocation": {
+      "type": "object",
+      "required": ["revocable", "is_revoked"],
+      "properties": {
+        "revocable": { "type": "boolean", "const": true },
+        "is_revoked": { "type": "boolean" },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+        "revocation_reason": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["party", "key_id", "algorithm", "signature_hex"],
+        "properties": {
+          "party": { "type": "string", "enum": ["grantor", "grantee"] },
+          "key_id": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["ed25519", "ecdsa-p256"] },
+          "signature_hex": { "type": "string", "pattern": "^[0-9a-fA-F]{128}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

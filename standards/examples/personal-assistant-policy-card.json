@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1.0",
+  "card_id": "card-assistant-alpha-001",
+  "issued_at": "2026-10-10T12:00:00Z",
+  "expires_at": "2026-10-17T12:00:00Z",
+  "principal": {
+    "agent_id": "agent-twin-local-01",
+    "principal_type": "person",
+    "owner_id": "user-local-77a"
+  },
+  "runtime_bounds": {
+    "network_egress": {
+      "mode": "allowlist_only",
+      "allowed_hosts": ["api.weather.gov", "caldav.local.internal"]
+    },
+    "compute_quota": {
+      "max_steps": 50,
+      "max_tokens": 100000,
+      "timeout_seconds": 300
+    },
+    "tools": {
+      "permitted_tools": ["read_calendar", "fetch_weather_forecast", "propose_schedule_entry"],
+      "forbidden_capabilities": ["execute_code", "write_system_files", "unprompted_remote_transmission"]
+    },
+    "data_boundaries": {
+      "file_access_mode": "read_only",
+      "forbidden_paths": ["/etc", "/home/user/.ssh", "credentials"]
+    }
+  },
+  "human_intervention": {
+    "require_approval_actions": ["modify_recurring_event", "share_contact_information"],
+    "financial_transaction_limit_cents": 0
+  },
+  "revocation": {
+    "revocable": true,
+    "is_revoked": false,
+    "revoked_at": null
+  },
+  "signatures": [
+    {
+      "party": "principal",
+      "key_id": "ed25519-key-user-01",
+      "algorithm": "ed25519",
+      "signature_hex": "4a7b9c2d1e0f3a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d"
+    }
+  ]
+}

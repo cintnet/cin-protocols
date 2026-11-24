@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1.0",
+  "grant_id": "grant-dentist-20261009-001",
+  "issued_at": "2026-10-09T14:00:00Z",
+  "expires_at": "2026-10-09T15:00:00Z",
+  "human_authorization": {
+    "mode": "explicit_prompt",
+    "authorized_by": "person:alice"
+  },
+  "grantor": {
+    "agent_id": "agent-alice-twin",
+    "principal_type": "person"
+  },
+  "grantee": {
+    "agent_id": "agent-dr-smith-clinic",
+    "organization_name": "Smile Dental Clinic",
+    "service_endpoint": "https://clinic.example/api/v1/agent-endpoint"
+  },
+  "purpose": {
+    "code": "oral-health-consultation",
+    "plain_text_description": "Single bacteria sensor reading to assess appointment necessity."
+  },
+  "data_scope": {
+    "category": "health_sensors",
+    "granularity": "single_reading",
+    "fields_permitted": ["streptococcus_mutans_relative_abundance"],
+    "max_invocations": 1
+  },
+  "retention_policy": {
+    "ephemeral_only": true,
+    "storage_allowed_days": 0
+  },
+  "revocation": {
+    "revocable": true,
+    "is_revoked": false,
+    "revoked_at": null,
+    "revocation_reason": null
+  },
+  "signatures": [
+    {
+      "party": "grantor",
+      "key_id": "key-alice-twin-ed25519-01",
+      "algorithm": "ed25519",
+      "signature_hex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.1.0",
+  "mandate_id": "mandate-municipal-solar-procurement-2026",
+  "delegator": {
+    "principal_id": "person:alice-procurement-officer",
+    "domain": "procurement.springfield.gov",
+    "role": "Senior Procurement Specialist"
+  },
+  "authority_statement": {
+    "authority_issuer_id": "auth-source:city-council-audit-authority",
+    "authority_evidence_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "allowed_delegable_actions": [
+      "vendor:query_catalog",
+      "quote:request_rfp",
+      "audit:verify_compliance",
+      "bid:place_conditional_order"
+    ],
+    "max_delegable_budget_cents": 5000000,
+    "allowed_target_domains": [
+      "vendors.cleangrid.org",
+      "supplies.coop-market.net"
+    ],
+    "issued_at": "2026-11-01T00:00:00Z",
+    "expires_at": "2026-12-01T00:00:00Z"
+  },
+  "mandate_grant": {
+    "agent_id": "agent:municipal-solar-evaluator-7b",
+    "target_domain": "vendors.cleangrid.org",
+    "conferred_actions": [
+      "vendor:query_catalog",
+      "quote:request_rfp",
+      "audit:verify_compliance"
+    ],
+    "limits": {
+      "max_invocations": 50,
+      "max_compute_tokens": 500000,
+      "max_budget_cents": 1000000,
+      "max_spend_per_transaction_cents": 250000
+    },
+    "token_status_list": {
+      "status_list_url": "https://example.com/status/statuslist-2026-11.json",
+      "status_list_index": 142,
+      "expected_status": "valid"
+    },
+    "issued_at": "2026-11-02T10:00:00Z",
+    "expires_at": "2026-11-15T18:00:00Z"
+  },
+  "cryptographic_binding": {
+    "algorithm": "Ed25519",
+    "authority_signature_digest": "sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+    "mandate_signature_digest": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+  }
+}

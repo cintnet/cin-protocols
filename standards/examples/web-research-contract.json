@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.1.0",
+  "contract_id": "webcontract-research-arxiv-query",
+  "issued_at": "2026-10-12T04:00:00Z",
+  "expires_at": "2026-10-12T08:00:00Z",
+  "principal": {
+    "principal_type": "person",
+    "principal_id": "person:steward-492",
+    "authorization_root": "direct_human_consent"
+  },
+  "target_agent": {
+    "agent_id": "agent-policy-researcher-01",
+    "role": "Autonomous Academic Pre-print Researcher",
+    "interaction_mode": "retrieval_only"
+  },
+  "domain_scope": {
+    "allowed_endpoints": [
+      "https://arxiv.org/abs",
+      "https://arxiv.org/html",
+      "https://export.arxiv.org/api"
+    ],
+    "forbidden_domains": [
+      "doubleclick.net",
+      "google-analytics.com",
+      "facebook.com"
+    ],
+    "allowed_methods": ["GET", "HEAD"],
+    "prohibit_wildcard_domains": true,
+    "prohibit_direct_ip": true
+  },
+  "interaction_bounds": {
+    "max_requests_per_session": 100,
+    "max_payload_bytes": 10485760,
+    "request_timeout_seconds": 30,
+    "max_consecutive_http_errors": 5
+  },
+  "data_protection": {
+    "cookie_policy": "disallowed",
+    "credential_retention_permitted": false,
+    "strip_personal_identifiers": true,
+    "ban_cross_site_tracking": true
+  },
+  "evidence_requirements": {
+    "capture_response_digests": true,
+    "addressable_object_schema": {
+      "require_address": true,
+      "require_value": true,
+      "require_association": true
+    },
+    "audit_channel": "local_hash_chain"
+  },
+  "signatures": [
+    {
+      "signer_role": "human_principal",
+      "key_id": "key-principal-ed25519-01",
+      "signature": "ed25519:abcdef1234567890/base64encodedPrincipalSignatureValue=="
+    },
+    {
+      "signer_role": "gatekeeper",
+      "key_id": "key-gatekeeper-runtime-01",
+      "signature": "ed25519:fedcba0987654321/base64encodedGatekeeperSignatureValue=="
+    }
+  ]
+}

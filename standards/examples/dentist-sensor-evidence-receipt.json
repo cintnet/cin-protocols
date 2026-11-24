@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1.0",
+  "receipt_id": "rcpt-dentist-sensor-20261011-001",
+  "issued_at": "2026-10-11T13:45:00Z",
+  "contract_id": "contract-dentist-visit-4029",
+  "manifest_hash": "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90",
+  "claim_scope": "data_minimization",
+  "verdict": "PASS",
+  "sufficiency_check": {
+    "status": "PASS",
+    "evidence_hashes": [
+      "111122223333444455556666777788889999aaaabbbbccccddddeeeeffff0000",
+      "22223333444455556666777788889999aaaabbbbccccddddeeeeffff00001111",
+      "3333444455556666777788889999aaaabbbbccccddddeeeeffff000011112222"
+    ],
+    "merkle_root": "444455556666777788889999aaaabbbbccccddddeeeeffff0000111122223333",
+    "deterministic_replay_ok": true
+  },
+  "coverage_check": {
+    "status": "PASS",
+    "committed_action_count": 3,
+    "accounted_action_count": 3,
+    "withheld_evidence_count": 0
+  },
+  "auditor": {
+    "auditor_id": "twin-runtime-host-local",
+    "auditor_type": "local_twin_runtime"
+  },
+  "signatures": [
+    {
+      "signer_role": "gatekeeper",
+      "key_id": "gk-key-ed25519-primary",
+      "algorithm": "ed25519",
+      "signature_hex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ],
+  "human_summary": "Verified that clinic sensor queries accounted for 3 committed readings without leaking Tier 1 patient medical records."
+}

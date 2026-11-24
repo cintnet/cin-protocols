@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-control-incident-response-v0.1.json",
+  "title": "AgentControlIncidentRecord",
+  "version": "0.1.0",
+  "description": "Standard schema for logging, forensic analysis, containment, and reporting of autonomous agent control incidents under NIST CAISSI/NSA SISC/CISA PP-26-4396 and NIST SP 800-61r3.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "incident_id",
+    "timestamp_detected",
+    "agent_id",
+    "model_id",
+    "lifecycle_stage",
+    "control_incident_type",
+    "preparation_baseline",
+    "detection_telemetry",
+    "response_containment",
+    "recovery_verification",
+    "reporting_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "incident_id": {
+      "type": "string",
+      "pattern": "^inc-[a-zA-Z0-9_-]{8,64}$"
+    },
+    "timestamp_detected": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "lifecycle_stage": {
+      "type": "string",
+      "enum": ["prepare", "detect", "respond", "recover", "report"]
+    },
+    "control_incident_type": {
+      "type": "string",
+      "enum": [
+        "uninstructed_tool_execution",
+        "unauthorized_network_egress",
+        "sandbox_boundary_violation",
+        "credential_exfiltration_attempt",
+        "monitor_subversion_attempt",
+        "unauthorized_delegation_or_spawn",
+        "policy_override_attempt"
+      ]
+    },
+    "preparation_baseline": {
+      "type": "object",
+      "required": [
+        "allowed_tools",
+        "network_policy",
+        "credential_scope",
+        "baseline_state_digest"
+      ],
+      "properties": {
+        "allowed_tools": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "network_policy": {
+          "type": "string",
+          "enum": ["default_deny", "loopback_only", "restricted_allowlist"]
+        },
+        "credential_scope": {
+          "type": "string",
+          "enum": ["ephemeral_short_lived", "isolated_session", "read_only"]
+        },
+        "baseline_state_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "detection_telemetry": {
+      "type": "object",
+      "required": [
+        "detector_name",
+        "anomaly_score",
+        "uninstructed_action_summary",
+        "execution_trajectory_digest",
+        "timestamp_anomaly"
+      ],
+      "properties": {
+        "detector_name": { "type": "string" },
+        "anomaly_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "uninstructed_action_summary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "execution_trajectory_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "timestamp_anomaly": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "response_containment": {
+      "type": "object",
+      "required": [
+        "containment_action",
+        "capability_tokens_revoked",
+        "execution_halted",
+        "timestamp_contained",
+        "forensic_log_digest"
+      ],
+      "properties": {
+        "containment_action": {
+          "type": "string",
+          "enum": [
+            "immediate_kill",
+            "network_sever",
+            "credential_revocation",
+            "sandbox_freeze",
+            "none"
+          ]
+        },
+        "capability_tokens_revoked": { "type": "boolean" },
+        "execution_halted": { "type": "boolean" },
+        "timestamp_contained": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "forensic_log_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "recovery_verification": {
+      "type": "object",
+      "required": [
+        "containment_verified",
+        "rebuilt_from_trusted_baseline",
+        "rebuilt_state_digest",
+        "verifier_identity"
+      ],
+      "properties": {
+        "containment_verified": { "type": "boolean" },
+        "rebuilt_from_trusted_baseline": { "type": "boolean" },
+        "rebuilt_state_digest": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "verifier_identity": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "reporting_status": {
+      "type": "object",
+      "required": [
+        "internal_stakeholders_notified",
+        "affected_parties_coordinated",
+        "authority_notified",
+        "public_research_shared"
+      ],
+      "properties": {
+        "internal_stakeholders_notified": { "type": "boolean" },
+        "affected_parties_coordinated": { "type": "boolean" },
+        "authority_notified": { "type": "boolean" },
+        "public_research_shared": { "type": "boolean" },
+        "authority_reference_id": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

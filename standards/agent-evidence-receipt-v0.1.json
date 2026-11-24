@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-evidence-receipt-v0.1.json",
+  "title": "AgentEvidenceReceipt",
+  "version": "0.1.0",
+  "description": "Draft schema for machine-checkable agent claim and transaction evidence receipts under Spec 03 and arXiv:2609.01992.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "issued_at",
+    "contract_id",
+    "manifest_hash",
+    "claim_scope",
+    "verdict",
+    "sufficiency_check",
+    "coverage_check",
+    "auditor",
+    "signatures",
+    "human_summary"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "receipt_id": { "type": "string", "pattern": "^rcpt-[a-zA-Z0-9_-]+$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "contract_id": { "type": "string", "pattern": "^[a-zA-Z0-9_-]+$" },
+    "manifest_hash": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+    "claim_scope": {
+      "type": "string",
+      "enum": ["data_minimization", "privacy_boundary", "task_execution", "credential_isolation", "labor_delivery"]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "INVALID", "INCONCLUSIVE"]
+    },
+    "sufficiency_check": {
+      "type": "object",
+      "required": ["status", "evidence_hashes", "merkle_root", "deterministic_replay_ok"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["PASS", "INVALID", "INCONCLUSIVE"]
+        },
+        "evidence_hashes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" }
+        },
+        "merkle_root": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+        "deterministic_replay_ok": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "coverage_check": {
+      "type": "object",
+      "required": ["status", "committed_action_count", "accounted_action_count", "withheld_evidence_count"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["PASS", "INVALID", "INCONCLUSIVE"]
+        },
+        "committed_action_count": { "type": "integer", "minimum": 0 },
+        "accounted_action_count": { "type": "integer", "minimum": 0 },
+        "withheld_evidence_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "auditor": {
+      "type": "object",
+      "required": ["auditor_id", "auditor_type"],
+      "properties": {
+        "auditor_id": { "type": "string" },
+        "auditor_type": {
+          "type": "string",
+          "enum": ["local_twin_runtime", "gatekeeper", "external_verifier"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signer_role", "key_id", "algorithm", "signature_hex"],
+        "properties": {
+          "signer_role": {
+            "type": "string",
+            "enum": ["runtime_host", "gatekeeper", "verifier", "twin_agent"]
+          },
+          "key_id": { "type": "string" },
+          "algorithm": { "type": "string", "enum": ["ed25519", "ecdsa-p256"] },
+          "signature_hex": { "type": "string", "pattern": "^[0-9a-fA-F]{128}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "human_summary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

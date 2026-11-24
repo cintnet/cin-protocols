@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-verifiable-mandate-v0.1.json",
+  "title": "AgentVerifiableMandate",
+  "version": "0.1.0",
+  "description": "Draft schema for cross-domain agent verifiable mandates separating delegator authority statements from agent mandate grants under draft-hulea-wimse-agent-mandate, Spec 03, and Floor Rights F1, F17, and F19.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "mandate_id",
+    "delegator",
+    "authority_statement",
+    "mandate_grant",
+    "cryptographic_binding"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "mandate_id": { "type": "string", "pattern": "^mandate-[a-zA-Z0-9_-]+$" },
+    "delegator": {
+      "type": "object",
+      "required": ["principal_id", "domain", "role"],
+      "properties": {
+        "principal_id": { "type": "string", "pattern": "^(person|org|dept):[a-zA-Z0-9._-]+$" },
+        "domain": { "type": "string", "pattern": "^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" },
+        "role": { "type": "string", "minLength": 2, "maxLength": 64 }
+      },
+      "additionalProperties": false
+    },
+    "authority_statement": {
+      "type": "object",
+      "required": [
+        "authority_issuer_id",
+        "authority_evidence_digest",
+        "allowed_delegable_actions",
+        "max_delegable_budget_cents",
+        "allowed_target_domains",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "authority_issuer_id": { "type": "string", "pattern": "^(auth-source|did):[a-zA-Z0-9._:-]+$" },
+        "authority_evidence_digest": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" },
+        "allowed_delegable_actions": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_:-]+$" },
+          "minItems": 1
+        },
+        "max_delegable_budget_cents": { "type": "integer", "minimum": 0 },
+        "allowed_target_domains": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" },
+          "minItems": 1
+        },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "mandate_grant": {
+      "type": "object",
+      "required": [
+        "agent_id",
+        "target_domain",
+        "conferred_actions",
+        "limits",
+        "token_status_list",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "agent_id": { "type": "string", "pattern": "^agent:[a-zA-Z0-9._-]+$" },
+        "target_domain": { "type": "string", "pattern": "^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" },
+        "conferred_actions": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_:-]+$" },
+          "minItems": 1
+        },
+        "limits": {
+          "type": "object",
+          "required": [
+            "max_invocations",
+            "max_compute_tokens",
+            "max_budget_cents",
+            "max_spend_per_transaction_cents"
+          ],
+          "properties": {
+            "max_invocations": { "type": "integer", "minimum": 1 },
+            "max_compute_tokens": { "type": "integer", "minimum": 1 },
+            "max_budget_cents": { "type": "integer", "minimum": 0 },
+            "max_spend_per_transaction_cents": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "token_status_list": {
+          "type": "object",
+          "required": ["status_list_url", "status_list_index", "expected_status"],
+          "properties": {
+            "status_list_url": { "type": "string", "format": "uri" },
+            "status_list_index": { "type": "integer", "minimum": 0 },
+            "expected_status": { "type": "string", "enum": ["valid", "revoked", "suspended"] }
+          },
+          "additionalProperties": false
+        },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "cryptographic_binding": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "authority_signature_digest",
+        "mandate_signature_digest"
+      ],
+      "properties": {
+        "algorithm": { "type": "string", "enum": ["Ed25519", "ES256", "ES384"] },
+        "authority_signature_digest": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" },
+        "mandate_signature_digest": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

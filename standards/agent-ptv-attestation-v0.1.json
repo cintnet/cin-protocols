@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent PTV Hardware Attestation Schema",
+  "description": "Cryptographic hardware-anchored attestation record for autonomous AI agent identity, configuration binding, and zero-knowledge claim transformation grounded in IETF RATS (RFC 9334), Entity Attestation Token (RFC 9711), and draft-anandakrishnan-rats-ptv-agent-identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "attestation_id",
+    "agent_id",
+    "hardware_anchor",
+    "configuration_binding",
+    "ptv_lifecycle",
+    "issued_at",
+    "expires_at",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["v0.1", "0.1.0"]
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^urn:cin:ptv-attestation:[a-f0-9]{16,64}$"
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^did:cin:agent:[a-zA-Z0-9._:-]+$"
+    },
+    "hardware_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enclave_type", "attestation_key_fingerprint", "hardware_model"],
+      "properties": {
+        "enclave_type": {
+          "type": "string",
+          "enum": ["tpm2", "sev-snp", "nitro-enclaves", "apple-secure-enclave", "intel-tdx", "local-ocap-enclave"]
+        },
+        "attestation_key_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "hardware_model": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        }
+      }
+    },
+    "configuration_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_id", "configuration_digest", "inference_runtime", "sandbox_isolation_tier"],
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "configuration_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inference_runtime": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "sandbox_isolation_tier": {
+          "type": "string",
+          "enum": ["hardware-isolated-ocap", "process-isolated-seccomp", "microvm-firecracker"]
+        }
+      }
+    },
+    "ptv_lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "challenge_nonce",
+        "zero_knowledge_proof_digest",
+        "transformed_eat_claims"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": ["PROVE", "TRANSFORM", "VERIFY"]
+        },
+        "challenge_nonce": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]{16,128}$"
+        },
+        "zero_knowledge_proof_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "transformed_eat_claims": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ueid", "profile", "security_level"],
+          "properties": {
+            "ueid": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{16,64}$"
+            },
+            "profile": {
+              "type": "string",
+              "format": "uri"
+            },
+            "security_level": {
+              "type": "string",
+              "enum": ["hardware-enforced", "isolated-restricted", "software-only"]
+            }
+          }
+        }
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64,128}$"
+    }
+  }
+}

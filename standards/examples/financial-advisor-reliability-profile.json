@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1.0",
+  "profile_id": "arp-finadvisor-2026-001",
+  "agent_id": "agent:fintech:portfolio-rebalancer-42",
+  "issued_at": "2026-10-11T00:00:00Z",
+  "expires_at": "2026-11-11T00:00:00Z",
+  "assurance_level": "verified",
+  "domain": "financial_advisory",
+  "operational_bounds": {
+    "max_consecutive_steps": 25,
+    "max_daily_invocations": 1200,
+    "max_exposure_units": 5000000,
+    "action_allowlist": [
+      "read_portfolio_allocations",
+      "compute_drift_vector",
+      "propose_rebalance_orders",
+      "submit_for_dual_authorization"
+    ]
+  },
+  "error_tolerances": {
+    "max_error_rate_bps": 25,
+    "max_drift_tolerance_bps": 150
+  },
+  "handoff_governance": {
+    "contract_anchor_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "validator_mode": "deterministic_gate",
+    "halt_on_failure": true
+  },
+  "fallback_policy": {
+    "on_breach": "halt",
+    "designated_supervisor_id": "person:risk-officer-99"
+  },
+  "signatures": [
+    {
+      "signer_id": "person:risk-officer-99",
+      "algorithm": "ed25519",
+      "signature_hex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cin.foundation/schemas/standards/agent-scope-contract-v0.1.json",
+  "title": "AgentScopeContract",
+  "version": "0.1.0",
+  "description": "Draft schema for host-enforced executable agent scope contracts under Spec 03 and Floor Rights F1, F3, F17, and F19.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "contract_id",
+    "issued_at",
+    "expires_at",
+    "principal",
+    "target_agent",
+    "execution_bounds",
+    "egress_controls",
+    "resource_quotas",
+    "termination_conditions",
+    "audit_provenance",
+    "signatures"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "contract_id": { "type": "string", "pattern": "^contract-[a-zA-Z0-9_-]+$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "principal": {
+      "type": "object",
+      "required": ["principal_type", "principal_id", "authorization_root"],
+      "properties": {
+        "principal_type": { "type": "string", "enum": ["person", "cooperative"] },
+        "principal_id": { "type": "string", "pattern": "^(person|cooperative):[a-zA-Z0-9_-]+$" },
+        "authorization_root": { "type": "string", "enum": ["direct_human_consent", "delegated_twin_policy"] }
+      },
+      "additionalProperties": false
+    },
+    "target_agent": {
+      "type": "object",
+      "required": ["agent_id", "role", "model_tier", "execution_mode"],
+      "properties": {
+        "agent_id": { "type": "string", "pattern": "^agent-[a-zA-Z0-9_-]+$" },
+        "role": { "type": "string", "minLength": 3 },
+        "model_tier": { "type": "string", "enum": ["local_deterministic", "local_isolated", "remote_frontier"] },
+        "execution_mode": { "type": "string", "enum": ["ephemeral_session", "bounded_task"] }
+      },
+      "additionalProperties": false
+    },
+    "execution_bounds": {
+      "type": "object",
+      "required": ["permitted_tools", "forbidden_capabilities", "filesystem_policy"],
+      "properties": {
+        "permitted_tools": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+          "minItems": 1
+        },
+        "forbidden_capabilities": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "filesystem_policy": {
+          "type": "object",
+          "required": ["allowed_read_roots", "allowed_write_roots", "forbidden_patterns"],
+          "properties": {
+            "allowed_read_roots": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^/(?!.*(?:\\.\\.|\\./|\\.$|/\\.|\\\\|:))[a-zA-Z0-9_./-]+/?$"
+              },
+              "minItems": 1
+            },
+            "allowed_write_roots": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^/(?!.*(?:\\.\\.|\\./|\\.$|/\\.|\\\\|:))[a-zA-Z0-9_./-]+/?$"
+              }
+            },
+            "forbidden_patterns": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "egress_controls": {
+      "type": "object",
+      "required": ["mode", "allowed_endpoints", "prohibit_direct_ip", "prohibit_dns_rebinding"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["offline", "allowlist_only"] },
+        "allowed_endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^https://(?!(?:\\d{1,3}\\.){3}\\d{1,3}(?::|/|$))[a-zA-Z0-9][a-zA-Z0-9.-]*\\.[a-zA-Z]{2,}(:[0-9]{1,5})?(/.*)?$"
+          }
+        },
+        "prohibit_direct_ip": { "type": "boolean" },
+        "prohibit_dns_rebinding": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "resource_quotas": {
+      "type": "object",
+      "required": ["max_wall_time_seconds", "max_tool_invocations", "max_inbound_bytes", "max_outbound_bytes"],
+      "properties": {
+        "max_wall_time_seconds": { "type": "integer", "minimum": 1 },
+        "max_tool_invocations": { "type": "integer", "minimum": 1 },
+        "max_inbound_bytes": { "type": "integer", "minimum": 0 },
+        "max_outbound_bytes": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "termination_conditions": {
+      "type": "object",
+      "required": ["auto_halt_on_boundary_violation", "max_consecutive_tool_failures", "cross_run_persistence_permitted"],
+      "properties": {
+        "auto_halt_on_boundary_violation": { "type": "boolean", "const": true },
+        "max_consecutive_tool_failures": { "type": "integer", "minimum": 1 },
+        "cross_run_persistence_permitted": { "type": "boolean", "const": false }
+      },
+      "additionalProperties": false
+    },
+    "audit_provenance": {
+      "type": "object",
+      "required": ["audit_channel", "contract_digest_sha256"],
+      "properties": {
+        "audit_channel": { "type": "string", "enum": ["local_hash_chain", "signed_evidence_ledger"] },
+        "contract_digest_sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["signer_role", "key_id", "signature"],
+        "properties": {
+          "signer_role": { "type": "string", "enum": ["runtime_host", "gatekeeper", "human_principal"] },
+          "key_id": { "type": "string" },
+          "signature": { "type": "string", "pattern": "^ed25519:[a-zA-Z0-9+/=]+$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

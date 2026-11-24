@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Federated Code Forge Attestation Schema",
+  "description": "Cryptographic test execution attestation, rate-limiting gate, and proof-carrying code verification record for federated code forges.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "attestation_id",
+    "repo_uri",
+    "commit_sha",
+    "tree_hash",
+    "attestor",
+    "test_suite_run",
+    "resource_quota",
+    "issued_at",
+    "expires_at",
+    "nonce",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["0.1.0", "v0.1"]
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^urn:cin:forge-attestation:[a-f0-9]{16,64}$"
+    },
+    "repo_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "commit_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "tree_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "attestor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestor_did", "enclave_type", "public_key"],
+      "properties": {
+        "attestor_did": {
+          "type": "string",
+          "pattern": "^did:[a-z0-9]+:[a-zA-Z0-9._:-]+$"
+        },
+        "enclave_type": {
+          "type": "string",
+          "enum": ["tpm2", "sev-snp", "nitro-enclaves", "local-ocap-sandbox"]
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64,128}$"
+        }
+      }
+    },
+    "test_suite_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "framework",
+        "total_tests",
+        "passed_tests",
+        "failed_tests",
+        "skipped_tests",
+        "execution_time_ms",
+        "isolation_level"
+      ],
+      "properties": {
+        "framework": {
+          "type": "string",
+          "enum": ["unittest", "pytest", "cargo-test", "go-test", "vitest"]
+        },
+        "total_tests": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "passed_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skipped_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "execution_time_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "isolation_level": {
+          "type": "string",
+          "enum": ["hardware-enclave", "ocap-sandbox-egress-blocked", "container-isolated"]
+        }
+      }
+    },
+    "resource_quota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["memory_mb", "cpu_cores", "network_egress_blocked"],
+      "properties": {
+        "memory_mb": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cpu_cores": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "network_egress_blocked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16,64}$"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64,128}$"
+    }
+  }
+}

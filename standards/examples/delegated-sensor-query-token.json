@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1.0",
+  "token_id": "del-sensor-query-20261010-001",
+  "issued_at": "2026-10-10T12:00:00Z",
+  "expires_at": "2026-10-10T13:00:00Z",
+  "principal_chain": ["person:alice", "agent:alice-twin", "agent:diagnostic-subagent"],
+  "delegator": {
+    "agent_id": "agent:alice-twin",
+    "role": "twin",
+    "max_delegation_depth": 1
+  },
+  "delegatee": {
+    "agent_id": "agent:diagnostic-subagent",
+    "role": "specialist"
+  },
+  "scope": {
+    "allowed_actions": ["query_reading", "compute_digest"],
+    "data_categories": ["health_sensors"],
+    "max_budget_units": 10,
+    "attenuation_enforced": true
+  },
+  "revocation": {
+    "revocable": true,
+    "is_revoked": false,
+    "revoked_at": null,
+    "revocation_reason": null
+  },
+  "signatures": [
+    {
+      "party": "delegator",
+      "key_id": "key-alice-twin-ed25519-01",
+      "algorithm": "ed25519",
+      "signature_hex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

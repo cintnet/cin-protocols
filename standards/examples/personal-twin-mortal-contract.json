@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "contract_id": "contract-twin-alice-20261011",
+  "agent_id": "agent-twin-alice",
+  "version": "1.0.0",
+  "purpose": {
+    "code": "personal_twin_assistant",
+    "plain_language_statement": "Personal twin operating strictly on-device to manage household calendar, health data, and local subscriptions without custody transfer."
+  },
+  "principals": [
+    {
+      "principal_id": "person-alice-local",
+      "principal_type": "person"
+    }
+  ],
+  "capability_tier": "tier_1_bounded",
+  "budgets": {
+    "inference_units_per_day": 500000,
+    "training_units": 0,
+    "memory_mb": 2048,
+    "storage_mb": 5120,
+    "max_replicas": 1
+  },
+  "metering_method": {
+    "local_inference": "estimated_ops_per_token",
+    "remote_inference": "disallowed",
+    "budget_conservation_enforced": true
+  },
+  "capabilities": [
+    {
+      "name": "local_sqlite_store",
+      "permission": "allow",
+      "data_scope": "local_encrypted_device_only"
+    },
+    {
+      "name": "outbound_network",
+      "permission": "deny",
+      "data_scope": "none"
+    },
+    {
+      "name": "financial_export",
+      "permission": "gate",
+      "data_scope": "user_approved_statement"
+    }
+  ],
+  "remote_models": {
+    "permitted": false,
+    "allowed_providers": [],
+    "max_data_sensitivity": "disallowed_for_remote"
+  },
+  "issued_at": "2026-10-11T00:00:00Z",
+  "expires_at": "2026-11-10T00:00:00Z",
+  "renewal_count": 0,
+  "approvers": [
+    {
+      "approver_id": "person-alice-local",
+      "role": "person_principal"
+    }
+  ],
+  "signatures": [
+    {
+      "signer_id": "person-alice-local",
+      "signature_type": "mock_local_key",
+      "signature_hex": "4a5b6c7d8e9f00112233445566778899aabbccddeeff00112233445566778899"
+    }
+  ]
+}
