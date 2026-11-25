@@ -4,27 +4,51 @@ from __future__ import annotations
 
 import copy
 import json
+from pathlib import Path
+import sys
 import unittest
 
-from research.protocol_inspector.protocol_verifier import (
-    DEMO_SIGNING_KEY,
-    MAX_HEARTBEAT_GAP_MS,
-    MAX_LEASE_DURATION_SEC,
-    apply_adversarial_faults,
-    build_browser_test_vectors,
-    build_valid_clearing_envelope,
-    build_valid_interlock_envelope,
-    build_valid_lease_envelope,
-    build_valid_provenance_envelope,
-    canonical_json,
-    hmac_sha256_hex,
-    sha256_hex,
-    verify_actuator_interlock,
-    verify_capability_lease,
-    verify_cooperative_clearing,
-    verify_envelope,
-    verify_provenance_receipt,
-)
+try:
+    from research.protocol_inspector.protocol_verifier import (
+        DEMO_SIGNING_KEY,
+        MAX_HEARTBEAT_GAP_MS,
+        MAX_LEASE_DURATION_SEC,
+        apply_adversarial_faults,
+        build_browser_test_vectors,
+        build_valid_clearing_envelope,
+        build_valid_interlock_envelope,
+        build_valid_lease_envelope,
+        build_valid_provenance_envelope,
+        canonical_json,
+        hmac_sha256_hex,
+        sha256_hex,
+        verify_actuator_interlock,
+        verify_capability_lease,
+        verify_cooperative_clearing,
+        verify_envelope,
+        verify_provenance_receipt,
+    )
+except ModuleNotFoundError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from protocol_verifier import (
+        DEMO_SIGNING_KEY,
+        MAX_HEARTBEAT_GAP_MS,
+        MAX_LEASE_DURATION_SEC,
+        apply_adversarial_faults,
+        build_browser_test_vectors,
+        build_valid_clearing_envelope,
+        build_valid_interlock_envelope,
+        build_valid_lease_envelope,
+        build_valid_provenance_envelope,
+        canonical_json,
+        hmac_sha256_hex,
+        sha256_hex,
+        verify_actuator_interlock,
+        verify_capability_lease,
+        verify_cooperative_clearing,
+        verify_envelope,
+        verify_provenance_receipt,
+    )
 
 
 class TestProtocolVerifier(unittest.TestCase):
